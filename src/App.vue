@@ -1,6 +1,20 @@
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import chars from './char.json'
+// Build an index of local image assets for runtime resolution
+// NOTE: This indexes common image extensions under src (relative to this file)
+const imageModules = import.meta.glob('./**/*.{png,jpg,jpeg,webp,gif,svg}', { eager: true })
+const assetIndex = new Map()
+for (const [modPath, mod] of Object.entries(imageModules)) {
+  // modPath examples: './images/Nahida1.png' or './char/nahida/6.jpg'
+  const url = mod && mod.default ? mod.default : ''
+  const noDot = modPath.startsWith('./') ? modPath.slice(2) : modPath
+  const noExt = noDot.replace(/\.[^.]+$/, '')
+  // index multiple keys for flexible lookup
+  assetIndex.set(modPath, url)
+  assetIndex.set(noDot, url)
+  assetIndex.set(noExt, url)
+}
 
 // Use JSON data as runtime metadata to initialize grid items
 const charData = chars
@@ -11,21 +25,97 @@ const images = ref(Array.from({ length: 9 }, (_, idx) => {
     id,
     selected: false,
     type: id === 5 ? 'cake' : currentCharKey,
-    src: '' // no image for now
+    src: '', // no image for now
+    placeholder: ''
   }
 }))
 
 // Dropdown: selected character and change handler
 const selectedChar = ref((chars && Array.isArray(chars.char) && chars.char[0]) ? chars.char[0] : '')
 const onCharSelected = (name) => {
-  // For now just log the selected name
-  console.log('[char selected]:', name)
+  // helpers
+  const safeKeys = (obj) => obj ? Object.keys(obj) : []
+  const shuffle = (arr) => {
+    const out = arr.slice()
+    for (let i = out.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1))
+      const tmp = out[i]
+      out[i] = out[j]
+      out[j] = tmp
+    }
+    return out
+  }
+  const sampleN = (arr, n) => shuffle(arr).slice(0, Math.max(0, n))
+  const pickOne = (arr) => (arr && arr.length > 0) ? arr[0] : undefined
+
+  const detail = (chars && chars.char_detail) ? chars.char_detail[name] : undefined
+  // 1) 从 char_src 里取出 8 个 key
+  const charSrcKeysAll = safeKeys(detail && detail.char_src)
+  const charSrcKeys8 = sampleN(charSrcKeysAll, 8)
+
+  // 2) 遍历 cake_list，进入 cake_detail[cakeName]，获取其 key 列表并各取一个
+  const cakeList = (detail && Array.isArray(detail.cake_list)) ? detail.cake_list : []
+  const cakePicked = cakeList.map((cakeName) => {
+    const cakeDetail = (chars && chars.cake_detail) ? chars.cake_detail[cakeName] : undefined
+    const cakeKeys = safeKeys(cakeDetail)
+    return { cakeName, pickedKey: pickOne(cakeKeys) }
+  })
+
+  // 3) 转换为路径并合并、随机
+  const charPaths = charSrcKeys8.map(k => `char/${name}/${k}`)
+  const cakePaths = cakePicked
+    .filter(x => x.pickedKey !== undefined && x.pickedKey !== null)
+    .map(x => `cake/${x.cakeName}/${x.pickedKey}`)
+  const merged = [...charPaths, ...cakePaths]
+  const shuffled = sampleN(merged, merged.length)
+
+  // 4) 解析路径 -> 本地打包后的 URL，并填充到 9 个占位中
+  const resolveUrl = (path) => {
+    if (!path) return ''
+    // Try exact, and with common prefixes and without extension
+    // Our strings look like 'char/xxx/key' or 'cake/xxx/name.ext'
+    const candidates = []
+    candidates.push(path) // as-is
+    candidates.push(`./${path}`)
+    candidates.push(`./images/${path}`)
+    // also try without extension if provided
+    const noExt = path.replace(/\.[^.]+$/, '')
+    candidates.push(noExt)
+    candidates.push(`./${noExt}`)
+    candidates.push(`./images/${noExt}`)
+    for (const key of candidates) {
+      const hit = assetIndex.get(key)
+      if (hit) return hit
+    }
+    return ''
+  }
+
+  const next = images.value.map((item, idx) => {
+    const p = shuffled[idx]
+    const url = p ? resolveUrl(p) : ''
+    const type = p ? (p.startsWith('cake/') ? 'cake' : name) : item.type
+    return {
+      ...item,
+      selected: false,
+      type,
+      src: url || '',
+      placeholder: p || ''
+    }
+  })
+  images.value = next
 }
 
 // Title computed from selected character's cake_name
 const selectedCakeName = computed(() => {
   const detail = chars && chars.char_detail && selectedChar.value ? chars.char_detail[selectedChar.value] : null
   return (detail && detail.cake_name) ? detail.cake_name : '萌小蛋糕'
+})
+
+// Trigger initial selection on mount
+onMounted(() => {
+  if (selectedChar.value) {
+    onCharSelected(selectedChar.value)
+  }
 })
 
 // 切换图片选中状态
@@ -156,7 +246,7 @@ const handleOverlayClick = (event) => {
         >
           <!-- 显示实际图片（若无图片则显示占位） -->
           <img v-if="image.src" :src="image.src" :alt="image.type === 'cake' ? '蛋糕' : '角色'" class="image-content" draggable="false">
-          <div v-else class="image-placeholder">No Image</div>
+          <div v-else class="image-placeholder">{{ image.placeholder || 'No Image' }}</div>
           <!-- 选中状态的对勾 -->
           <div v-if="image.selected" class="checkmark">
             <svg xmlns="http://www.w3.org/2000/svg" height="32px" viewBox="0 -960 960 960" width="32px" fill="#0079CD"><path d="m424-296 282-282-56-56-226 226-114-114-56 56 170 170Zm56 216q-83 0-156-31.5T197-197q-54-54-85.5-127T80-480q0-83 31.5-156T197-763q54-54 127-85.5T480-880q83 0 156 31.5T763-763q54 54 85.5 127T880-480q0 83-31.5 156T763-197q-54 54-127 85.5T480-80Z"/></svg>

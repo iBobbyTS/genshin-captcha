@@ -9,15 +9,15 @@
             "name": "芙宁娜",
             "cake_name": "可爱的蓝莓小蛋糕",
             "char_src": {
-                "1": null,
-                "2": null,
-                "3": null,
-                "4": null,
-                "5": "https://www.pixiv.net/en/artworks/136576658",
-                "6": "https://www.pixiv.net/en/artworks/136415588",
-                "7": "https://www.pixiv.net/en/artworks/136395549",
-                "8": "https://www.pixiv.net/en/artworks/136331667",
-                "9": "https://www.pixiv.net/en/artworks/136239560"
+                "1.png": null,
+                "2.png": null,
+                "3.png": null,
+                "4.png": null,
+                "5.png": "https://www.pixiv.net/en/artworks/136576658",
+                "6.png": "https://www.pixiv.net/en/artworks/136415588",
+                "7.png": "https://www.pixiv.net/en/artworks/136395549",
+                "8.png": "https://www.pixiv.net/en/artworks/136331667",
+                "9.png": "https://www.pixiv.net/en/artworks/136239560"
             },
             "cake_list": ["blueberry"]
         },
@@ -30,27 +30,27 @@
             "name": "纳西妲",
             "cake_name": "萌的抹茶小蛋糕",
             "char_src": {
-                "1": "unknown",
-                "2": "unknown",
-                "3": null,
-                "4": null,
-                "5": null,
-                "6": "unknown",
-                "7": null,
-                "8": null,
-                "9": null
+                "1.png": "unknown",
+                "2.png": "unknown",
+                "3.png": null,
+                "4.png": null,
+                "5.png": null,
+                "6.png": "unknown",
+                "7.png": null,
+                "8.png": null,
+                "9.png": null
             },
             "cake_list": ["matcha"]
         }
     },
     "cake_detail": {
         "blueberry": {
-            "1": "https://ciao.kitchen/vegan-cheesecake/"
+            "1.jpg": "https://ciao.kitchen/vegan-cheesecake/"
         },
         "strawberry": {
         },
         "matcha": {
-            "1": "unknown"
+            "1.png": "unknown"
         }
     }
 }
