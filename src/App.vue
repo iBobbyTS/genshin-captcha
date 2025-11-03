@@ -127,7 +127,9 @@ const handleOverlayClick = (event) => {
         v-model="selectedChar"
         @change="onCharSelected(selectedChar)"
       >
-        <option v-for="c in chars.char" :key="c" :value="c">{{ c }}</option>
+        <option v-for="c in chars.char" :key="c" :value="c">
+          {{ (chars.char_detail && chars.char_detail[c] && chars.char_detail[c].name) ? chars.char_detail[c].name : c }}
+        </option>
       </select>
     </div>
     <!-- 标题栏 -->

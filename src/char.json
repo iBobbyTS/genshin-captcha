@@ -7,7 +7,7 @@
     "char_detail": {
         "furina": {
             "name": "芙宁娜",
-            "cake_name": "蓝莓小蛋糕",
+            "cake_name": "可爱的蓝莓小蛋糕",
             "char_src": {
                 "1": null,
                 "2": null,
@@ -23,12 +23,12 @@
         },
         "nilou": {
             "name": "妮露",
-            "cake_name": "草莓奶油布丁",
+            "cake_name": "可爱的草莓奶油布丁",
             "cake_list": ["strawberry"]
         },
         "nahida": {
             "name": "纳西妲",
-            "cake_name": "抹茶小蛋糕",
+            "cake_name": "萌的抹茶小蛋糕",
             "char_src": {
                 "1": "unknown",
                 "2": "unknown",
