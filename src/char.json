@@ -7,15 +7,45 @@
     "char_detail": {
         "furina": {
             "name": "芙宁娜",
-            "cake_name": "蓝莓小蛋糕"
+            "cake_name": "蓝莓小蛋糕",
+            "char_src": {
+                "1": null,
+                "2": null,
+                "3": null,
+                "4": null,
+                "5": "https://www.pixiv.net/en/artworks/136576658",
+                "6": "https://www.pixiv.net/en/artworks/136415588",
+                "7": "https://www.pixiv.net/en/artworks/136395549",
+                "8": "https://www.pixiv.net/en/artworks/136331667",
+                "9": "https://www.pixiv.net/en/artworks/136239560"
+            },
+            "cake_list": ["blueberry"]
         },
         "nilou": {
             "name": "妮露",
-            "cake_name": "草莓奶油布丁"
+            "cake_name": "草莓奶油布丁",
+            "cake_list": ["strawberry"]
         },
         "nahida": {
             "name": "纳西妲",
-            "cake_name": "抹茶小蛋糕"
+            "cake_name": "抹茶小蛋糕",
+            "char_src": {
+                "1": "unknown",
+                "2": "unknown",
+                "3": null,
+                "4": null,
+                "5": null,
+                "6": "unknown",
+                "7": null,
+                "8": null,
+                "9": null
+            },
+            "cake_list": ["matcha"]
+        }
+    },
+    "cake_detail": {
+        "blueberry": {
+            "1": "https://ciao.kitchen/vegan-cheesecake/"
         }
     }
 }

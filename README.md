@@ -19,11 +19,11 @@ npm run dev
 - 如果画师说明了不可以使用，请不要使用。
 
 ## 贡献说明：
-1. 检查src/images目录下是否存在该角色英文名的文件夹（全小写）
-2. 检查该文件夹下的char文件夹里是否存在该图片（小蛋糕放到cake文件夹里）
-3. 转换格式：分辨率最大256*256，格式jpeg或png
-3. 按照序号增加图片，图片名称为序号.png/jpeg
-4. 提交PR增加图片时，请在artwork_source.txt里添加来源。CG写null，自己拍的写自己的GitHub地址，尽量不要写unknown
+1. 检查src/images/char目录下是否存在该角色英文名的文件夹（全小写）；小蛋糕放在src/images/cake目录下。
+2. 检查该文件夹里是否存在该图片。
+3. 转换格式：分辨率最大256*256，格式jpeg或png。
+3. 按照序号增加图片，图片名称为序号.png/jpeg。
+4. 提交PR增加图片时，请在src/char.json[char_detail][角色英文名][char_src]里添加来源。CG写null，自己拍的写自己的GitHub地址，尽量不要写unknown。小蛋糕放在src/char.json[cake_detail][小蛋糕英文名]里。
 
 ## TODO
 - 把图片移动到角色文件夹里（代码也要改）
