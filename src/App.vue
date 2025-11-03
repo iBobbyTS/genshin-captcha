@@ -1,5 +1,5 @@
 <script setup>
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 import chars from './char.json'
 
 // Use JSON data as runtime metadata to initialize grid items
@@ -21,6 +21,12 @@ const onCharSelected = (name) => {
   // For now just log the selected name
   console.log('[char selected]:', name)
 }
+
+// Title computed from selected character's cake_name
+const selectedCakeName = computed(() => {
+  const detail = chars && chars.char_detail && selectedChar.value ? chars.char_detail[selectedChar.value] : null
+  return (detail && detail.cake_name) ? detail.cake_name : '萌小蛋糕'
+})
 
 // 切换图片选中状态
 const toggleImage = (id) => {
@@ -135,7 +141,7 @@ const handleOverlayClick = (event) => {
     <!-- 标题栏 -->
     <div class="header">
       <h3>选择所有包含</h3>
-      <h2>世界上最萌小蛋糕</h2>
+      <h2>世界上最{{ selectedCakeName }}</h2>
       <p>的图片，点按后请点击“ 验证 ”</p>
     </div>
 
