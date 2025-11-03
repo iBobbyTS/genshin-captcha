@@ -1,28 +1,26 @@
 <script setup>
 import { ref } from 'vue'
-// 导入图片资源
-import nahida1 from './images/Nahida1.png'
-import nahida2 from './images/Nahida2.png'
-import nahida3 from './images/Nahida3.png'
-import nahida4 from './images/Nahida4.png'
-import nahida5 from './images/Nahida5.png'
-import nahida6 from './images/Nahida6.png'
-import nahida7 from './images/Nahida7.png'
-import nahida8 from './images/Nahida8.png'
-import cake from './images/cake.png'
+import chars from './char.json'
 
-// 模拟图片数据，包含是否选中的状态和图片路径
-const images = ref([
-  { id: 1, selected: false, type: 'nahida', src: nahida1 },
-  { id: 2, selected: false, type: 'nahida', src: nahida2 },
-  { id: 3, selected: false, type: 'nahida', src: nahida3 },
-  { id: 4, selected: false, type: 'nahida', src: nahida4 },
-  { id: 5, selected: false, type: 'cake', src: cake },
-  { id: 6, selected: false, type: 'nahida', src: nahida5 },
-  { id: 7, selected: false, type: 'nahida', src: nahida6 },
-  { id: 8, selected: false, type: 'nahida', src: nahida7 },
-  { id: 9, selected: false, type: 'nahida', src: nahida8 }
-])
+// Use JSON data as runtime metadata to initialize grid items
+const charData = chars
+const currentCharKey = 'nahida'
+const images = ref(Array.from({ length: 9 }, (_, idx) => {
+  const id = idx + 1
+  return {
+    id,
+    selected: false,
+    type: id === 5 ? 'cake' : currentCharKey,
+    src: '' // no image for now
+  }
+}))
+
+// Dropdown: selected character and change handler
+const selectedChar = ref((chars && Array.isArray(chars.char) && chars.char[0]) ? chars.char[0] : '')
+const onCharSelected = (name) => {
+  // For now just log the selected name
+  console.log('[char selected]:', name)
+}
 
 // 切换图片选中状态
 const toggleImage = (id) => {
@@ -122,6 +120,16 @@ const handleOverlayClick = (event) => {
 
 <template>
   <div class="captcha-container">
+    <!-- 左上角下拉框 -->
+    <div class="toolbar">
+      <select
+        v-if="Array.isArray(chars.char)"
+        v-model="selectedChar"
+        @change="onCharSelected(selectedChar)"
+      >
+        <option v-for="c in chars.char" :key="c" :value="c">{{ c }}</option>
+      </select>
+    </div>
     <!-- 标题栏 -->
     <div class="header">
       <h3>选择所有包含</h3>
@@ -138,8 +146,9 @@ const handleOverlayClick = (event) => {
           :class="{ 'selected': image.selected }"
           @click="toggleImage(image.id)"
         >
-          <!-- 显示实际图片 -->
-          <img :src="image.src" :alt="image.type === 'cake' ? '蛋糕' : '角色'" class="image-content" draggable="false">
+          <!-- 显示实际图片（若无图片则显示占位） -->
+          <img v-if="image.src" :src="image.src" :alt="image.type === 'cake' ? '蛋糕' : '角色'" class="image-content" draggable="false">
+          <div v-else class="image-placeholder">No Image</div>
           <!-- 选中状态的对勾 -->
           <div v-if="image.selected" class="checkmark">
             <svg xmlns="http://www.w3.org/2000/svg" height="32px" viewBox="0 -960 960 960" width="32px" fill="#0079CD"><path d="m424-296 282-282-56-56-226 226-114-114-56 56 170 170Zm56 216q-83 0-156-31.5T197-197q-54-54-85.5-127T80-480q0-83 31.5-156T197-763q54-54 127-85.5T480-880q83 0 156 31.5T763-763q54 54 85.5 127T880-480q0 83-31.5 156T763-197q-54 54-127 85.5T480-80Z"/></svg>
@@ -443,6 +452,12 @@ const handleOverlayClick = (event) => {
   border-radius: 8px;
 }
 
+.toolbar {
+  display: flex;
+  justify-content: flex-start;
+  margin-bottom: 12px;
+}
+
 .header {
   background-color: #1976d2;
   color: white;
@@ -494,6 +509,18 @@ const handleOverlayClick = (event) => {
   height: 100%;
   object-fit: cover;
   display: block;
+  border-radius: 4px;
+}
+
+.image-placeholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #6b7280;
+  font-size: 14px;
+  background: #f0f0f0;
   border-radius: 4px;
 }
 

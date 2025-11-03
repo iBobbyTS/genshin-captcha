@@ -46,6 +46,11 @@
     "cake_detail": {
         "blueberry": {
             "1": "https://ciao.kitchen/vegan-cheesecake/"
+        },
+        "strawberry": {
+        },
+        "matcha": {
+            "1": "unknown"
         }
     }
 }
