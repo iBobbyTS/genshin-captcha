@@ -32,6 +32,7 @@ npm run dev
 - 底部显示所有图片的来源
 - 处理非正方形的图片
 - 随机选择1-3个cake和6-8个角色
+- 成功和失败语音
 
 ## 演化说明：
 灵感来自[请选择最萌小蛋糕！省流（纳西妲）](https://www.bilibili.com/video/BV1VAsczqEfc/)
