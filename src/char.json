@@ -1,10 +1,21 @@
 {
     "char": [
         "furina",
-        "nilou"
+        "nilou",
+        "nahida"
     ],
-    "char_name": {
-        "furina": "芙宁娜",
-        "nilou": "妮露"
+    "char_detail": {
+        "furina": {
+            "name": "芙宁娜",
+            "cake_name": "蓝莓小蛋糕"
+        },
+        "nilou": {
+            "name": "妮露",
+            "cake_name": "草莓奶油布丁"
+        },
+        "nahida": {
+            "name": "纳西妲",
+            "cake_name": "抹茶小蛋糕"
+        }
     }
 }
