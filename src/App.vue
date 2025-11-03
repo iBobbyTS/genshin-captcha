@@ -128,17 +128,11 @@ const toggleImage = (id) => {
 
 // 验证按钮点击事件
 const handleVerify = () => {
-  // 验证逻辑：选择除id为5的蛋糕图片外的所有项目视为验证通过
-  const allSelected = images.value.every(img => {
-    // id为5的项目（蛋糕图片）不应该被选中，其他项目都应该被选中
-    if (img.id === 5) {
-      return !img.selected;
-    } else {
-      return img.selected;
-    }
-  });
-  
-  if (allSelected) {
+  // Success when: all non-cake are selected AND no cake is selected
+  const allCharSelected = images.value.filter(img => img.type !== 'cake').every(img => img.selected)
+  const anyCakeSelected = images.value.some(img => img.type === 'cake' && img.selected)
+
+  if (allCharSelected && !anyCakeSelected) {
     showNotification({
       title: '🎉验证成功！🎉',
       message: '验证成功！\nCiallo～(∠・ω< )⌒☆'
