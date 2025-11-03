@@ -26,8 +26,6 @@ npm run dev
 4. 提交PR增加图片时，请在src/char.json[char_detail][角色英文名][char_src]里添加来源。CG写null，自己拍的写自己的GitHub地址，尽量不要写unknown。小蛋糕放在src/char.json[cake_detail][小蛋糕英文名]里。
 
 ## TODO
-- 把图片移动到角色文件夹里（代码也要改）
-- 底部显示所有图片的来源
 - 处理非正方形的图片
 - 随机选择1-3个cake和6-8个角色
 - 成功和失败语音

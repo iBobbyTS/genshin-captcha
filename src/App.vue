@@ -26,7 +26,8 @@ const images = ref(Array.from({ length: 9 }, (_, idx) => {
     selected: false,
     type: id === 5 ? 'cake' : currentCharKey,
     src: '', // no image for now
-    placeholder: ''
+    placeholder: '',
+    source: ''
   }
 }))
 
@@ -94,12 +95,27 @@ const onCharSelected = (name) => {
     const p = shuffled[idx]
     const url = p ? resolveUrl(p) : ''
     const type = p ? (p.startsWith('cake/') ? 'cake' : name) : item.type
+    // resolve source link from JSON
+    const resolveSource = (path) => {
+      if (!path) return ''
+      const [kind, a, b] = path.split('/')
+      if (kind === 'char') {
+        return chars?.char_detail?.[a]?.char_src?.[b] || ''
+      }
+      if (kind === 'cake') {
+        return chars?.cake_detail?.[a]?.[b] || ''
+      }
+      return ''
+    }
+    const rawSource = p ? resolveSource(p) : ''
+    const source = (typeof rawSource === 'string' && rawSource.length === 0) ? null : rawSource
     return {
       ...item,
       selected: false,
       type,
       src: url || '',
-      placeholder: p || ''
+      placeholder: p || '',
+      source
     }
   })
   images.value = next
@@ -137,11 +153,15 @@ const handleVerify = () => {
       title: '🎉验证成功！🎉',
       message: '验证成功！\nCiallo～(∠・ω< )⌒☆'
     });
+    // Mark to refresh after user confirms success
+    shouldRefreshOnConfirm.value = true
   } else {
     showNotification({
       title: '❌验证失败❌',
       message: '请选择正确的图片！'
     });
+    // Do not refresh on failure confirm
+    shouldRefreshOnConfirm.value = false
   }
 }
 
@@ -160,6 +180,8 @@ const notification = ref({
   message: '',
   animationType: ''
 });
+// Whether to refresh grid after success confirmation
+const shouldRefreshOnConfirm = ref(false)
 
 // 可用的动画效果
 const animationTypes = ['fade', 'bounce', 'slide-up', 'slide-down', 'slide-left', 'slide-right', 'zoom', 'rotate'];
@@ -186,7 +208,7 @@ const showNotification = (options) => {
 };
 
 // 关闭通知的方法
-const closeNotification = () => {
+const closeNotification = (confirmed = false) => {
   // 添加淡出动画效果
   const container = document.querySelector('.notification-container');
   if (container) {
@@ -197,15 +219,33 @@ const closeNotification = () => {
   // 延迟后完全隐藏，让动画有足够时间播放
   setTimeout(() => {
     notification.value.visible = false;
+    // Only refresh when user confirmed and last verify was success
+    if (confirmed && shouldRefreshOnConfirm.value) {
+      onCharSelected(selectedChar.value)
+      shouldRefreshOnConfirm.value = false
+    }
   }, 300);
 };
 
 // 点击空白处关闭通知
 const handleOverlayClick = (event) => {
   if (event.target.classList.contains('notification-overlay')) {
-    closeNotification();
+    closeNotification(false);
   }
 };
+
+// Open source link in new tab
+const openSource = (url) => {
+  try {
+    window.open(url, '_blank', 'noopener,noreferrer')
+  } catch (e) {
+    // ignore
+  }
+}
+
+// Helpers for footer source handling
+const isUnknown = (v) => typeof v === 'string' && v.toLowerCase() === 'unknown'
+const isClickable = (v) => !!v && !isUnknown(v)
 </script>
 
 <template>
@@ -289,8 +329,26 @@ const handleOverlayClick = (event) => {
       
       <!-- 确认按钮 -->
       <div class="notification-footer">
-        <button class="notification-button" @click="closeNotification">确定</button>
+        <button class="notification-button" @click="closeNotification(true)">确定</button>
       </div>
+    </div>
+  </div>
+
+  <!-- 图片来源 Footer -->
+  <div class="sources-footer">
+    <div class="sources-title">图片来源</div>
+    <div class="sources-row">
+      <button
+        v-for="image in images.filter(img => img.source !== null)"
+        :key="`src-${image.id}`"
+        class="source-item"
+        :disabled="!isClickable(image.source)"
+        @click="isClickable(image.source) && openSource(image.source)"
+        :title="image.source || '无来源链接'"
+      >
+        <img v-if="image.src" :src="image.src" alt="thumb" draggable="false" />
+        <span v-else>{{ image.placeholder || 'No Image' }}</span>
+      </button>
     </div>
   </div>
 </template>
@@ -678,5 +736,48 @@ const handleOverlayClick = (event) => {
 
 .verify-button:hover {
   background-color: #1565c0;
+}
+
+/* Sources footer */
+.sources-footer {
+  margin-top: 12px;
+}
+
+.sources-title {
+  font-size: 12px;
+  color: #374151;
+  margin-bottom: 4px;
+}
+
+.sources-row {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  padding: 6px 0;
+}
+
+.source-item {
+  border: 1px solid #ddd;
+  background: #fff;
+  border-radius: 4px;
+  padding: 4px;
+  min-width: 64px;
+  min-height: 64px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.source-item[disabled] {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.source-item img {
+  width: 64px;
+  height: 64px;
+  object-fit: cover;
+  border-radius: 2px;
 }
 </style>
